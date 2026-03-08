@@ -3,7 +3,7 @@
 
 <head>
 
-<title>Oráculo de Arismendi</title>
+<title>El Oráculo de Arismendi</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
 
@@ -18,7 +18,7 @@ padding:60px;
 }
 
 textarea{
-width:400px;
+width:420px;
 height:80px;
 font-size:16px;
 }
@@ -28,6 +28,7 @@ padding:12px 24px;
 margin-top:10px;
 background:gold;
 border:none;
+cursor:pointer;
 }
 
 #respuesta{
@@ -60,37 +61,92 @@ white-space:pre-line;
 
 let frases=[];
 
-fetch("arismendi.json")
-.then(r=>r.json())
-.then(data=>{
-frases=data;
-});
+/* cargar archivo json */
 
-function elegirFrases(){
+async function cargarFrases(){
 
-let copia=[...frases];
+try{
 
-copia.sort(()=>Math.random()-0.5);
+let r=await fetch("arismendi.json");
+frases=await r.json();
 
-return copia.slice(0,3);
+}catch(e){
+
+console.log("No se pudo cargar el libro");
 
 }
 
-function interpretar(pregunta){
+}
 
-let interpretaciones=[
+cargarFrases();
+
+
+function elegirFrase(pregunta){
+
+pregunta=pregunta.toLowerCase();
+
+let mejores=[];
+
+for(let item of frases){
+
+let score=0;
+
+let palabras=pregunta.split(" ");
+
+for(let p of palabras){
+
+if(item.frase.toLowerCase().includes(p))
+score++;
+
+}
+
+mejores.push({
+frase:item.frase,
+score:score
+});
+
+}
+
+mejores.sort((a,b)=>b.score-a.score);
+
+if(mejores[0].score===0){
+
+return frases[Math.floor(Math.random()*frases.length)].frase;
+
+}
+
+return mejores[0].frase;
+
+}
+
+
+function interpretacion(){
+
+let textos=[
+
 "El oráculo sugiere reflexionar sobre esta enseñanza.",
 "Tal vez esta frase ilumina la situación que planteas.",
 "Arismendi invita a mirar el problema desde otra perspectiva.",
 "Esta enseñanza puede estar relacionada con el momento que atraviesas.",
 "El consejo parece apuntar a un cambio de mirada."
+
 ];
 
-return interpretaciones[Math.floor(Math.random()*interpretaciones.length)];
+return textos[Math.floor(Math.random()*textos.length)];
 
 }
 
+
 function consultar(){
+
+if(frases.length===0){
+
+document.getElementById("respuesta").innerText=
+"El libro aún no ha sido cargado.";
+
+return;
+
+}
 
 let pregunta=document.getElementById("pregunta").value;
 
@@ -99,18 +155,16 @@ document.getElementById("respuesta").innerText=
 
 setTimeout(()=>{
 
-let seleccion=elegirFrases();
+let frase=elegirFrase(pregunta);
 
-let frase=seleccion[0];
-
-let interpretacion=interpretar(pregunta);
-
-document.getElementById("respuesta").innerText=
+let texto=
 
 "Frase del libro:\n\n"+
 frase+
 "\n\n"+
-interpretacion;
+interpretacion();
+
+document.getElementById("respuesta").innerText=texto;
 
 },1200);
 
