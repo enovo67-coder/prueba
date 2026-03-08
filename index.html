@@ -3,7 +3,7 @@
 
 <head>
 
-<title>El Oráculo de Arismendi</title>
+<title>Oráculo de Arismendi</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel&display=swap" rel="stylesheet">
 
@@ -59,112 +59,88 @@ white-space:pre-line;
 
 <script>
 
-let frases=[];
+/* FRASES DEL LIBRO */
 
-/* cargar archivo json */
+let frases = [
 
-async function cargarFrases(){
+"Las estrellas no determinan el destino del hombre, pero reflejan su camino interior.",
 
-try{
+"Cuando la vida parece cerrarse, lo que debemos abrir es la mirada.",
 
-let r=await fetch("arismendi.json");
-frases=await r.json();
+"Las dificultades no son castigos sino señales que invitan a la transformación.",
 
-}catch(e){
+"Quien solo mira lo visible pierde la mitad de la verdad.",
 
-console.log("No se pudo cargar el libro");
+"La desesperación muchas veces es la antesala de un cambio.",
 
-}
+"El destino no está escrito en las estrellas sino en la forma en que aprendemos a mirar.",
 
-}
+"A veces la respuesta no está en cambiar el mundo sino en cambiar la forma en que lo miramos.",
 
-cargarFrases();
+"Los momentos de crisis suelen ser también momentos de revelación.",
 
+"El camino del destino se revela paso a paso, nunca todo de una vez.",
 
-function elegirFrase(pregunta){
+"Quien aprende a escuchar las señales de la vida rara vez se pierde."
 
-pregunta=pregunta.toLowerCase();
-
-let mejores=[];
-
-for(let item of frases){
-
-let score=0;
-
-let palabras=pregunta.split(" ");
-
-for(let p of palabras){
-
-if(item.frase.toLowerCase().includes(p))
-score++;
-
-}
-
-mejores.push({
-frase:item.frase,
-score:score
-});
-
-}
-
-mejores.sort((a,b)=>b.score-a.score);
-
-if(mejores[0].score===0){
-
-return frases[Math.floor(Math.random()*frases.length)].frase;
-
-}
-
-return mejores[0].frase;
-
-}
+];
 
 
-function interpretacion(){
+/* INTERPRETACIONES */
 
-let textos=[
+let interpretaciones = [
 
 "El oráculo sugiere reflexionar sobre esta enseñanza.",
+
 "Tal vez esta frase ilumina la situación que planteas.",
+
 "Arismendi invita a mirar el problema desde otra perspectiva.",
+
 "Esta enseñanza puede estar relacionada con el momento que atraviesas.",
+
 "El consejo parece apuntar a un cambio de mirada."
 
 ];
 
-return textos[Math.floor(Math.random()*textos.length)];
+
+/* ELEGIR FRASE */
+
+function elegirFrase(){
+
+return frases[Math.floor(Math.random()*frases.length)];
 
 }
 
+
+/* ELEGIR INTERPRETACION */
+
+function interpretar(){
+
+return interpretaciones[Math.floor(Math.random()*interpretaciones.length)];
+
+}
+
+
+/* CONSULTAR */
 
 function consultar(){
 
-if(frases.length===0){
+let pregunta = document.getElementById("pregunta").value;
 
-document.getElementById("respuesta").innerText=
-"El libro aún no ha sido cargado.";
-
-return;
-
-}
-
-let pregunta=document.getElementById("pregunta").value;
-
-document.getElementById("respuesta").innerText=
+document.getElementById("respuesta").innerText =
 "Consultando las enseñanzas de Arismendi...";
 
 setTimeout(()=>{
 
-let frase=elegirFrase(pregunta);
+let frase = elegirFrase();
 
-let texto=
-
+let respuesta =
 "Frase del libro:\n\n"+
 frase+
 "\n\n"+
-interpretacion();
+interpretar();
 
-document.getElementById("respuesta").innerText=texto;
+document.getElementById("respuesta").innerText = respuesta;
 
 },1200);
 
