@@ -59,8 +59,6 @@ margin:auto;
 
 let frases=[];
 
-/* cargar frases del libro */
-
 fetch("arismendi.json")
 .then(r=>r.json())
 .then(data=>{
@@ -68,11 +66,12 @@ frases=data;
 });
 
 
-function buscarFrases(pregunta){
+function buscarFrase(pregunta){
 
 let palabras=pregunta.toLowerCase().split(" ");
 
-let resultados=[];
+let mejor="";
+let mejorScore=0;
 
 for(let frase of frases){
 
@@ -85,74 +84,44 @@ score++;
 
 }
 
-resultados.push({
-frase:frase,
-score:score
-});
+if(score>mejorScore){
+
+mejorScore=score;
+mejor=frase;
 
 }
 
-resultados.sort((a,b)=>b.score-a.score);
+}
 
-return resultados.slice(0,3).map(x=>x.frase);
+if(mejorScore===0){
+
+mejor=frases[Math.floor(Math.random()*frases.length)];
+
+}
+
+return mejor;
 
 }
 
 
 
-async function consultar(){
+function consultar(){
 
 let pregunta=document.getElementById("pregunta").value;
 
 document.getElementById("respuesta").innerText=
 "Consultando las enseñanzas de Arismendi...";
 
-let citas=buscarFrases(pregunta).join("\n");
+setTimeout(()=>{
 
-let prompt=`
-Usa las enseñanzas del Profesor Arismendi
-para responder a la pregunta.
-
-Frases del libro:
-
-${citas}
-
-Pregunta:
-${pregunta}
-
-Responde con:
-
-1 una frase del libro
-2 interpretación
-3 consejo breve
-`;
-
-let r=await fetch("https://api.openai.com/v1/chat/completions",{
-
-method:"POST",
-
-headers:{
-"Content-Type":"application/json",
-"Authorization":"Bearer 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"
-},
-
-body:JSON.stringify({
-
-model:"gpt-4o-mini",
-
-messages:[
-{role:"system",content:"Eres el Oráculo del Profesor Arismendi"},
-{role:"user",content:prompt}
-]
-
-})
-
-});
-
-let data=await r.json();
+let frase=buscarFrase(pregunta);
 
 document.getElementById("respuesta").innerText=
-data.choices[0].message.content;
+
+frase+"\n\nInterpretación:\n"+
+"El oráculo sugiere reflexionar sobre esta enseñanza en relación con tu pregunta.";
+
+},1200);
 
 }
 
