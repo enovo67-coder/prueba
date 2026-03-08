@@ -35,6 +35,7 @@ margin-top:30px;
 font-size:20px;
 max-width:600px;
 margin:auto;
+white-space:pre-line;
 }
 
 </style>
@@ -65,45 +66,29 @@ fetch("arismendi.json")
 frases=data;
 });
 
+function elegirFrases(){
 
-function buscarFrase(pregunta){
+let copia=[...frases];
 
-let palabras=pregunta.toLowerCase().split(" ");
+copia.sort(()=>Math.random()-0.5);
 
-let mejor="";
-let mejorScore=0;
-
-for(let frase of frases){
-
-let score=0;
-
-for(let p of palabras){
-
-if(frase.toLowerCase().includes(p))
-score++;
+return copia.slice(0,3);
 
 }
 
-if(score>mejorScore){
+function interpretar(pregunta){
 
-mejorScore=score;
-mejor=frase;
+let interpretaciones=[
+"El oráculo sugiere reflexionar sobre esta enseñanza.",
+"Tal vez esta frase ilumina la situación que planteas.",
+"Arismendi invita a mirar el problema desde otra perspectiva.",
+"Esta enseñanza puede estar relacionada con el momento que atraviesas.",
+"El consejo parece apuntar a un cambio de mirada."
+];
 
-}
-
-}
-
-if(mejorScore===0){
-
-mejor=frases[Math.floor(Math.random()*frases.length)];
-
-}
-
-return mejor;
+return interpretaciones[Math.floor(Math.random()*interpretaciones.length)];
 
 }
-
-
 
 function consultar(){
 
@@ -114,12 +99,18 @@ document.getElementById("respuesta").innerText=
 
 setTimeout(()=>{
 
-let frase=buscarFrase(pregunta);
+let seleccion=elegirFrases();
+
+let frase=seleccion[0];
+
+let interpretacion=interpretar(pregunta);
 
 document.getElementById("respuesta").innerText=
 
-frase+"\n\nInterpretación:\n"+
-"El oráculo sugiere reflexionar sobre esta enseñanza en relación con tu pregunta.";
+"Frase del libro:\n\n"+
+frase+
+"\n\n"+
+interpretacion;
 
 },1200);
 
